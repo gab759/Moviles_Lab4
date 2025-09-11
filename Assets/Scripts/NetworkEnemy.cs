@@ -8,7 +8,7 @@ public class NetworkEnemy : NetworkBehaviour
     private Transform targetPlayer;
     private GameManager gameManager;
 
-    private NetworkVariable<int> health = new NetworkVariable<int>(3); // Vida inicial 3
+    private NetworkVariable<int> health = new NetworkVariable<int>(3);
 
     public void SetGameManager(GameManager manager)
     {
@@ -23,7 +23,10 @@ public class NetworkEnemy : NetworkBehaviour
 
         if (targetPlayer != null)
         {
-            Vector3 direction = (targetPlayer.position - transform.position).normalized;
+            Vector3 targetPos = targetPlayer.position;
+            targetPos.y = transform.position.y;
+
+            Vector3 direction = (targetPos - transform.position).normalized;
             transform.position += direction * moveSpeed * Time.deltaTime;
         }
     }
@@ -61,7 +64,6 @@ public class NetworkEnemy : NetworkBehaviour
 
     private void Die()
     {
-        // Notificar al GameManager que este enemigo fue destruido
         if (gameManager != null)
         {
             gameManager.EnemyDestroyed(gameObject);
@@ -83,7 +85,6 @@ public class NetworkEnemy : NetworkBehaviour
         {
             TakeDamage(1);
 
-            // Opcional: Destruir la bala al impactar
             NetworkObject projNetObj = other.GetComponent<NetworkObject>();
             if (projNetObj != null)
             {

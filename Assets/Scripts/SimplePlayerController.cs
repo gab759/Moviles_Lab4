@@ -41,21 +41,17 @@ public class SimplePlayerController : NetworkBehaviour
             AnimatorSetTriggerRpc("Jump");
         }
 
-        // Disparar y rotar hacia donde apunta el mouse
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, ~0)) // dispara contra todo menos Nothing
+            if (Physics.Raycast(ray, out RaycastHit hit, 100f, ~0))
             {
                 Vector3 lookDirection = (hit.point - transform.position);
-                lookDirection.y = 0f; // evita que mire hacia arriba/abajo
-
+                lookDirection.y = 0f;
                 if (lookDirection.sqrMagnitude > 0.01f)
                 {
-                    // Rotar al jugador hacia el punto
                     transform.rotation = Quaternion.LookRotation(lookDirection);
 
-                    // Disparar
                     Vector3 shootDirection = lookDirection.normalized;
                     ShootServerRpc(shootDirection);
                 }

@@ -16,8 +16,13 @@ public class Projectile : NetworkBehaviour
     {
         GetComponent<NetworkObject>().Despawn(true);
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
+        if (!IsServer) return;
 
+        if (other.CompareTag("Wall"))
+        {
+            GetComponent<NetworkObject>().Despawn(true);
+        }
     }
 }
