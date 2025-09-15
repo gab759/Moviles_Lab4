@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : NetworkBehaviour
 {
     private static GameManager Instance;
+    private Dictionary<ulong, PlayerData> playerStats = new Dictionary<ulong, PlayerData>();
 
     [SerializeField] private Transform player;
     [SerializeField] private GameObject buffP;

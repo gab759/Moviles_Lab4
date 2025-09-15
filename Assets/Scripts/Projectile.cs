@@ -1,8 +1,10 @@
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
 
 public class Projectile : NetworkBehaviour
 {
+    public ulong OwnerClientId;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -24,5 +26,20 @@ public class Projectile : NetworkBehaviour
         {
             GetComponent<NetworkObject>().Despawn(true);
         }
+        else if (other.CompareTag("Player"))
+        {
+            SimplePlayerController player = other.GetComponent<SimplePlayerController>();
+            if (player != null && player.OwnerClientId != OwnerClientId)
+            {
+                // obtener daño del dueño
+                SimplePlayerController ownerPlayer = NetworkManager.Singleton.ConnectedClients[OwnerClientId].PlayerObject.GetComponent<SimplePlayerController>();
+                int damage = ownerPlayer.Damage.Value;
+
+                player.ApplyDamage(damage);
+            }
+
+            GetComponent<NetworkObject>().Despawn(true);
+        }
     }
+
 }

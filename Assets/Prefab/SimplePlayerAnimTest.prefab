@@ -643,7 +643,8 @@ MonoBehaviour:
   projectilePrefab: {fileID: 2523896056321394269, guid: de7b1e6cefe97904f9fcb421207c3c24, type: 3}
   firePoint: {fileID: 5204737148937307536}
   projectileForce: 20
-  playerCamera: {fileID: 0}
+  Health:
+    m_InternalValue: 100
 --- !u!114 &8600981392437182536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2383,7 +2384,7 @@ Transform:
   m_GameObject: {fileID: 7666306651196232494}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.291, z: 0.321}
+  m_LocalPosition: {x: 0, y: 1.291, z: 0.502}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -1,5 +1,6 @@
-using UnityEngine;
+using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 public class SimplePlayerController : NetworkBehaviour
 {
@@ -11,10 +12,11 @@ public class SimplePlayerController : NetworkBehaviour
     private Rigidbody rb;
     public LayerMask groundLayer;
     public float jumpForce = 5f;
-
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     public float projectileForce = 20f;
+    public NetworkVariable<int> Health = new NetworkVariable<int>(100);
+    public NetworkVariable<int> Damage = new NetworkVariable<int>(25);
 
     void Start()
     {
@@ -58,7 +60,28 @@ public class SimplePlayerController : NetworkBehaviour
             }
         }
     }
+    [ServerRpc]
+    public void TakeDamageServerRpc(int damage)
+    {
+        if (!IsServer) return;
 
+        Health.Value -= damage;
+        if (Health.Value <= 0)
+        {
+            Respawn();
+        }
+    }
+    private void Respawn()
+    {
+        // Restaurar vida
+        Health.Value = 100;
+
+        // Buscar posición aleatoria en rango del mapa
+        Vector3 randomPos = new Vector3(Random.Range(-7f, 7f), 1f, Random.Range(-7f, 7f));
+
+        // Mover al jugador
+        transform.position = randomPos;
+    }
     bool IsGrounded()
     {
         return Physics.Raycast(transform.position, Vector3.down, 1.1f, groundLayer);
@@ -97,7 +120,16 @@ public class SimplePlayerController : NetworkBehaviour
             animator.SetBool("FreeFall", true);
         }
     }
-        
+    public void ApplyDamage(int damage)
+    {
+        if (!IsServer) return;
+
+        Health.Value -= damage;
+        if (Health.Value <= 0)
+        {
+            Respawn();
+        }
+    }
     [ServerRpc]
     private void ShootServerRpc(Vector3 direction)
     {
@@ -107,10 +139,14 @@ public class SimplePlayerController : NetworkBehaviour
         NetworkObject netObj = projectile.GetComponent<NetworkObject>();
         netObj.Spawn(true);
 
+        Projectile proj = projectile.GetComponent<Projectile>();
+        proj.OwnerClientId = OwnerClientId; // guardamos el dueño
+
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = direction * projectileForce;
+            rb.linearVelocity = direction * projectileForce;
         }
     }
 }
+
